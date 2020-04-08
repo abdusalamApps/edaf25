@@ -48,7 +48,7 @@ public class Lab4 {
             } else {
                 for (Edge e : g.edges(x.node)) { // för varje båge e från x
                     int w = e.destination; // w = e.destination
-                    int newDist = map.get(x.node) + e.distance;
+                    int newDist = x.distance + e.distance;
 
                     int wDist  = map.getOrDefault(w, Integer.MAX_VALUE);
 
