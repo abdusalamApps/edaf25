@@ -44,7 +44,7 @@ public class Lab4 {
         while (!queue.isEmpty()) {   // så länge pq inte är tom
             PQElement x = queue.poll(); // {x, dist} = ta ut minsta elementet ur pq
             if (x.node == end) { // om x == v
-                return map.get(end); // return dist
+                return x.distance; // return dist
             } else {
                 for (Edge e : g.edges(x.node)) { // för varje båge e från x
                     int w = e.destination; // w = e.destination
