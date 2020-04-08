@@ -34,7 +34,6 @@ public class Lab4 {
      * @return shortest distance between start and end
      */
     public static int distance(DistanceGraph g, int start, int end) {
-        int dist = 0;
         // En Comparator skapas för att hålla listan med bågar sorterad:
         Comparator<PQElement> cmp = Comparator.comparingInt(e -> e.distance);
         PriorityQueue<PQElement> queue = new PriorityQueue<>(cmp);
@@ -45,17 +44,17 @@ public class Lab4 {
         while (!queue.isEmpty()) {   // så länge pq inte är tom
             PQElement x = queue.poll(); // {x, dist} = ta ut minsta elementet ur pq
             if (x.node == end) { // om x == v
-                return x.distance; // return dist
+                return map.get(end); // return dist
             } else {
                 for (Edge e : g.edges(x.node)) { // för varje båge e från x
                     int w = e.destination; // w = e.destination
-                    int newDist = dist + e.distance;
-                    int wDist = dist;
+                    int newDist = map.get(x.node) + e.distance;
+
+                    int wDist  = map.getOrDefault(w, Integer.MAX_VALUE);
 
                     if (!map.containsKey(w) || newDist < wDist) {
                         map.put(w, newDist);
                         queue.add(new PQElement(w, newDist));
-                        dist = newDist;
                     }
                 }
             }
