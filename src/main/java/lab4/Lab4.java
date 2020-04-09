@@ -1,13 +1,6 @@
 package lab4;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Helper class for the priority queue in Dijkstras algorithm.
@@ -50,10 +43,11 @@ public class Lab4 {
                     int w = e.destination; // w = e.destination
                     int newDist = x.distance + e.distance;
 
-                    int wDist  = map.getOrDefault(w, Integer.MAX_VALUE);
+                    int wDist = map.getOrDefault(w, Integer.MAX_VALUE);
 
                     if (!map.containsKey(w) || newDist < wDist) {
                         map.put(w, newDist);
+                        queue.removeIf((edge) -> edge.node == w);
                         queue.add(new PQElement(w, newDist));
                     }
                 }
@@ -73,12 +67,50 @@ public class Lab4 {
      * @return a list containing the nodes on the shortest path from start to end
      */
     public static List<Integer> shortestPath(DistanceGraph g, int start, int end) {
+        if (start == end) {
+            return new LinkedList<Integer>();
+        }
+        List<Integer> answer = new LinkedList<>();
+        answer.add(start);
         Comparator<PQElement> cmp = Comparator.comparingInt(e -> e.distance);
         PriorityQueue<PQElement> queue = new PriorityQueue<>(cmp);
         queue.add(new PQElement(start, 0));
-        // TODO(D3): slutför algoritmen och returnera vägen från start till end.
-        // T.ex. om kortaste vägen mellan 0 och 10 är 0->1->5->10 ska listan [0,1,5,10] returneras.
-        List<Integer> answer = new LinkedList<>();
-        return answer;
+
+        Map<Integer, Integer> distances = new HashMap<>();
+        g.vertexSet().forEach(v -> distances.put(v, Integer.MAX_VALUE));
+        distances.put(start, 0);
+
+        Map<Integer, Integer> parent = new HashMap<>();
+        while (!queue.isEmpty()) {
+            PQElement element = queue.poll();
+            if (element.node == end) {
+                List<Integer> path = new LinkedList<>();
+                int current = end;
+                while (true) { //Problematic...
+                    path.add(current);
+                    current = parent.get(current);
+                    if (current == start) {
+                        path.add(current);
+                        break;
+                    }
+                }
+                Collections.reverse(path);
+                System.out.println(path);
+                return path;
+            } else {
+                for (Edge e : g.edges(element.node)) {
+                    int w = e.destination;
+                    int newDist = element.distance + e.distance;
+                    int wDist = distances.get(w);
+                    if (!distances.containsKey(w) || newDist < wDist) {
+                        distances.put(w, newDist);
+                        queue.add(new PQElement(w, distances.get(w)));
+                        parent.put(w, element.node);
+
+                    }
+                }
+            }
+        }
+        return new LinkedList<Integer>();
     }
 }
